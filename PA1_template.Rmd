@@ -121,4 +121,28 @@ if (median(no_na_total_steps$total_steps) != median(total_steps$total_steps_per_
 }
 ```
 
+
 ## Are there differences in activity patterns between weekdays and weekends?
+
+Creating a factor variable for weekdays and weekend:
+```{r, echo=TRUE}
+no_na_data <- no_na_data %>%
+                mutate(day_of_the_week=weekdays(date)) %>%
+                mutate(type_of_day=ifelse(
+                    day_of_the_week %in% c('sábado','domingo'),
+                    'weekend',
+                    'weekday')) %>%
+                mutate(type_of_day=as.factor(type_of_day))
+```
+
+Plotting the 5-minute interval (x-axis) and the average number of steps taken:
+```{r, echo=TRUE}
+mean_steps <- no_na_data %>%
+    select(interval, steps, type_of_day) %>%
+    group_by(type_of_day, interval) %>%
+    summarize(mean_steps=mean(steps))
+
+ggplot(mean_steps, aes(x=interval, y=mean_steps)) +
+    geom_line(aes(fill=type_of_day), position="dodge", stat="identity") +
+    facet_wrap(~type_of_day)
+```
