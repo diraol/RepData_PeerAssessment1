@@ -5,17 +5,52 @@ output:
     keep_md: true
 ---
 
+## Loading libraries to help processing the data
+```{r, echo = TRUE}
+library(dplyr)
+library(ggplot2)
+```
 
-## Loading and preprocessing the data
-
-
+## Loading and preprocessing the data First check if the file activity.zip was
+unzipped, if it was not, then unzip it.
+```{r, echo = TRUE}
+if (!file.exists('activity.csv')){
+    unzip('activity.zip')
+}
+```
+Then read the data, using the colClasses argument to set the Date field as Date.
+```{r, echo = TRUE}
+data <- read.table('activity.csv',
+                    header=TRUE, sep=',',
+                    colClasses=c('numeric','Date','numeric'))
+```
 
 ## What is mean total number of steps taken per day?
+First let's calculate the total number of steps taken per day, ignoring NA's.
+```{r, echo = TRUE}
+total_steps <- data %>%
+    filter(!is.na(steps)) %>%
+    group_by(date) %>%
+    summarize(total_steps_per_day=sum(steps))
+```
 
+Plotting an histogram with the total number of steps.
+```{r, echo = TRUE}
+hist(total_steps$total_steps_per_day, breaks=50)
+```
 
+Calculating the mean of total number of setps taken per day
+```{r, echo = TRUE}
+mean(total_steps$total_steps_per_day)
+```
+
+Calculating the median of total number of setps taken per day
+```{r, echo = TRUE}
+median(total_steps$total_steps_per_day)
+```
 
 ## What is the average daily activity pattern?
-
+Plotting  the average number of steps taken for each five minutes
 
 
 ## Imputing missing values
