@@ -107,7 +107,87 @@ mean_steps_interval %>%
 ```
 
 ## Imputing missing values
+The total number of rows with missing is:
 
+```r
+data %>% filter(is.na(steps)) %>% nrow()
+```
 
+```
+## [1] 2304
+```
+
+Filling in all missing values with the mean value for that interval.
+
+```r
+no_na_data <- data
+no_na_data[match(mean_steps_interval$interval, data$interval) &
+         is.na(data$steps), 'steps'] <- mean_steps_interval$mean_steps
+```
+
+Plotting an histogram with the total steps taken each day for the new dataset withou NA
+
+```r
+no_na_total_steps <- no_na_data %>%
+    group_by(date) %>%
+    summarize(total_steps=sum(steps))
+```
+
+Plotting an histogram with the total number of steps.
+
+```r
+hist(no_na_total_steps$total_steps, breaks=50)
+```
+
+![](PA1_template_files/figure-html/unnamed-chunk-13-1.png) 
+
+Calculating the mean of total number of setps taken per day
+
+```r
+mean(no_na_total_steps$total_steps)
+```
+
+```
+## [1] 10766.19
+```
+
+Calculating the median of total number of setps taken per day
+
+```r
+median(no_na_total_steps$total_steps)
+```
+
+```
+## [1] 10766.19
+```
+
+Checking if there is any difference on the mean of total number of steps taken per day
+
+```r
+if (mean(no_na_total_steps$total_steps) != mean(total_steps$total_steps_per_day)) {
+    mean(no_na_total_steps$total_steps) - mean(total_steps$total_steps_per_day)
+    abs(mean(no_na_total_steps$total_steps) - mean(total_steps$total_steps_per_day))/
+        mean(total_steps$total_steps_per_day)
+}
+```
+
+Checking if there is any difference on the median of total number of steps taken per day
+
+```r
+if (median(no_na_total_steps$total_steps) != median(total_steps$total_steps_per_day)) {
+    print('The absolute difference on the median is:')
+    print(median(no_na_total_steps$total_steps) - median(total_steps$total_steps_per_day))
+    print('The percentual change is:')
+    print(abs(median(no_na_total_steps$total_steps) - median(total_steps$total_steps_per_day))*100/
+        median(total_steps$total_steps_per_day))
+}
+```
+
+```
+## [1] "The absolute difference on the median is:"
+## [1] 1.188679
+## [1] "The percentual change is:"
+## [1] 0.01104207
+```
 
 ## Are there differences in activity patterns between weekdays and weekends?
